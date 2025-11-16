@@ -1,0 +1,7 @@
+{
+  "name": "NyayaSahayak (Justice Helper)",
+  "description": "A sophisticated, AI-first judicial case management platform for the Indian legal system. It serves as an intelligent assistant for judges and court staff, leveraging Gemini 2.5 Pro to accelerate the justice delivery process through automated case triage, document analysis, and comprehensive case management.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
