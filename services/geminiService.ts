@@ -1,5 +1,6 @@
+
 import { GoogleGenAI, Type, GenerateContentResponse, Part } from "@google/genai";
-import { PredictionResult, Case, DocumentAnalysisResult, ChatMessage } from "../types";
+import { PredictionResult, Case, DocumentAnalysisResult, ChatMessage, QuantumFingerprintResult } from "../types";
 import { withErrorRecovery } from "../lib/withErrorRecovery";
 
 const API_KEY = process.env.API_KEY;
@@ -16,7 +17,25 @@ const predictCaseOutcomeInternal = async (sanitizedCase: Case, language: string)
         hi: 'Hindi',
         ta: 'Tamil',
         te: 'Telugu',
-        bn: 'Bengali'
+        bn: 'Bengali',
+        mr: 'Marathi',
+        gu: 'Gujarati',
+        kn: 'Kannada',
+        ml: 'Malayalam',
+        pa: 'Punjabi',
+        or: 'Odia',
+        sa: 'Sanskrit',
+        ur: 'Urdu',
+        as: 'Assamese',
+        mai: 'Maithili',
+        sat: 'Santali',
+        ks: 'Kashmiri',
+        kok: 'Konkani',
+        sd: 'Sindhi',
+        doi: 'Dogri',
+        mni: 'Manipuri',
+        brx: 'Bodo',
+        ne: 'Nepali'
     };
     const targetLanguage = langMap[language as keyof typeof langMap] || 'English';
 
@@ -100,15 +119,25 @@ const analyzeDocumentsInternal = async (parts: Part[]): Promise<DocumentAnalysis
     return JSON.parse(response.text.trim());
 };
 
-const chatWithNayaaybotInternal = async (message: string, ragParts?: Part[], history: ChatMessage[] = []): Promise<GenerateContentResponse> => {
+const chatWithNyayabotInternal = async (message: string, ragParts?: Part[], history: ChatMessage[] = []): Promise<GenerateContentResponse> => {
     const useGoogleSearch = !ragParts || ragParts.length === 0;
 
-    // Map the app's message history to the format Gemini expects.
-    // We slice because the last message in history is the new user message, which we'll handle separately.
-    const contents = history.slice(0, -1).filter(msg => msg.role === 'user' || msg.role === 'model').map(msg => ({
-        role: msg.role,
-        parts: [{ text: msg.content }]
-    }));
+    // The Gemini API requires conversation history to start with a user message.
+    // We process the history to ensure it's valid.
+    let processedHistory = history.slice(0, -1); // Exclude the latest user message
+
+    const firstUserIndex = processedHistory.findIndex(m => m.role === 'user');
+    
+    // If a user message exists, slice the history to start from there. Otherwise, start fresh.
+    processedHistory = firstUserIndex > -1 ? processedHistory.slice(firstUserIndex) : [];
+
+    // Map to the format Gemini expects
+    const contents = processedHistory
+        .filter(msg => msg.role === 'user' || msg.role === 'model')
+        .map(msg => ({
+            role: msg.role,
+            parts: [{ text: msg.content }]
+        }));
 
     // Prepare the parts for the current user message
     const currentMessageParts: Part[] = [];
@@ -116,7 +145,7 @@ const chatWithNayaaybotInternal = async (message: string, ragParts?: Part[], his
 
     if (ragParts && ragParts.length > 0) {
         currentMessageParts.push(...ragParts);
-        finalMessage = `Based ONLY on the context from the provided document(s), answer the following question. If the answer is not in the documents, say that you cannot find the answer in the provided context. Question: ${message}`;
+        finalMessage = `Based ONLY on the context from the provided document(s), answer the following question about Social Sciences, History, Geography, or Civics. If the answer is not in the documents, say that you cannot find the answer in the provided context. Question: ${message}`;
     }
     currentMessageParts.push({ text: finalMessage });
 
@@ -126,10 +155,82 @@ const chatWithNayaaybotInternal = async (message: string, ragParts?: Part[], his
     const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash',
         contents: contents,
-        systemInstruction: "You are NYAAYBOT, an expert assistant on the Constitution of India and user-provided legal documents. When documents are provided, base your answers solely on their content. When no documents are provided, answer user questions accurately and cite your sources when available from Google Search. Keep answers concise and clear.",
+        systemInstruction: "You are NYAYABOT. You are strictly strictly limited to discussing Social Sciences, History, Geography, and Political studies or civics. If a user asks about anything else, politely decline and explain that you only discuss these topics. Do not answer questions outside this scope. You can use Google Search to find accurate information regarding these subjects.",
         tools: useGoogleSearch ? [{ googleSearch: {} }] : [],
     });
     return response;
+};
+
+const generateQuantumFingerprintInternal = async (content: string | Part[], language: string): Promise<QuantumFingerprintResult> => {
+    const langMap: { [key: string]: string } = {
+        en: 'English',
+        hi: 'Hindi',
+        ta: 'Tamil',
+        te: 'Telugu',
+        bn: 'Bengali',
+        mr: 'Marathi',
+        gu: 'Gujarati',
+        kn: 'Kannada',
+        ml: 'Malayalam',
+        pa: 'Punjabi',
+        or: 'Odia',
+        sa: 'Sanskrit',
+        ur: 'Urdu',
+        as: 'Assamese',
+        mai: 'Maithili',
+        sat: 'Santali',
+        ks: 'Kashmiri',
+        kok: 'Konkani',
+        sd: 'Sindhi',
+        doi: 'Dogri',
+        mni: 'Manipuri',
+        brx: 'Bodo',
+        ne: 'Nepali'
+    };
+    const targetLanguage = langMap[language as keyof typeof langMap] || 'English';
+
+    let parts: Part[] = [];
+    if (typeof content === 'string') {
+        parts.push({ text: `Document Content: "${content}"` });
+    } else {
+        parts = content;
+    }
+    
+    parts.push({ text: `Act as a quantum security analysis system. Based on the provided document content (text or files), generate a unique quantum cryptographic hash and a data integrity report. The content is considered a legal document, and the report should verify its integrity. The entire JSON response must be in ${targetLanguage}.` });
+
+    const response = await ai.models.generateContent({
+        model: "gemini-2.5-pro",
+        contents: { parts: parts },
+        config: {
+            responseMimeType: "application/json",
+            responseSchema: {
+                type: Type.OBJECT,
+                properties: {
+                    quantumHash: {
+                        type: Type.STRING,
+                        description: "A unique, long, hexadecimal-like string representing the document's quantum fingerprint. Should be highly complex."
+                    },
+                    integrityStatus: {
+                        type: Type.STRING,
+                        enum: ['Verified & Secure', 'Potential Tampering Detected'],
+                        description: "The verification status of the document."
+                    },
+                    anomaliesDetected: {
+                        type: Type.ARRAY,
+                        items: { type: Type.STRING },
+                        description: "A list of any detected anomalies or inconsistencies. If none, this should be an empty array."
+                    },
+                    verificationTimestamp: {
+                        type: Type.STRING,
+                        description: "The ISO 8601 timestamp of when the verification was performed."
+                    }
+                },
+                required: ["quantumHash", "integrityStatus", "anomaliesDetected", "verificationTimestamp"]
+            },
+        },
+    });
+
+    return JSON.parse(response.text.trim());
 };
 
 
@@ -150,11 +251,19 @@ const fallbackDocAnalysis: DocumentAnalysisResult = {
     potentialPrecedents: ['N/A']
 };
 
+const fallbackFingerprint: QuantumFingerprintResult = {
+    quantumHash: 'Error generating hash: Fallback response due to API failure.',
+    integrityStatus: 'Potential Tampering Detected',
+    anomaliesDetected: ['Failed to connect to the quantum verification service.'],
+    verificationTimestamp: new Date().toISOString()
+};
+
 
 export const geminiService = {
     predictCaseOutcome: (sanitizedCase: Case, language: string) => withErrorRecovery(() => predictCaseOutcomeInternal(sanitizedCase, language), fallbackPrediction),
     analyzeDocuments: (parts: Part[]) => withErrorRecovery(() => analyzeDocumentsInternal(parts), fallbackDocAnalysis),
-    chatWithNayaaybot: chatWithNayaaybotInternal,
+    chatWithNyayabot: chatWithNyayabotInternal,
+    generateQuantumFingerprint: (content: string | Part[], language: string) => withErrorRecovery(() => generateQuantumFingerprintInternal(content, language), fallbackFingerprint),
     transcribeAudio: async (audioPart: Part) => {
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-pro',

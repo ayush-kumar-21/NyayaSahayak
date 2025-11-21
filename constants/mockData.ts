@@ -1,6 +1,5 @@
 
 import { Case } from '../types';
-import { Language } from '../hooks/useLocalization';
 
 const mockCasesEn: Case[] = [
     {
@@ -85,10 +84,7 @@ const mockCasesHi: Case[] = [
         lastHearingDate: "2024-05-20",
         complexityScore: 8.5,
         summary: "हत्या और आग्नेयास्त्रों के अवैध कब्जे के आरोपों से जुड़ा एक आपराधिक मामला। अभियोजन पक्ष का आरोप है कि प्रतिवादी, राज शर्मा, एक घातक गोलीबारी में शामिल था। मुख्य सबूतों में प्रत्यक्षदर्शी गवाही और फोरेंसिक रिपोर्ट शामिल हैं।",
-        pii: {
-            "राज शर्मा": "[REDACTED_PERSON]",
-            "CR/0255/2023": "[REDACTED_CASE_ID]",
-        },
+        pii: { "राज शर्मा": "[REDACTED_PERSON]" },
         priority: 'High',
         caseType: 'Criminal',
     },
@@ -103,24 +99,22 @@ const mockCasesHi: Case[] = [
         lastHearingDate: "2024-06-10",
         complexityScore: 6.2,
         summary: "प्रिया सिंह द्वारा एबीसी कॉर्पोरेशन के खिलाफ अनुबंध के उल्लंघन और दोषपूर्ण सेवाएं प्रदान करने के लिए दायर एक दीवानी मुकदमा। याचिकाकर्ता का दावा है कि प्रतिवादी द्वारा सेवा समझौते पर खरा न उतरने के कारण वित्तीय क्षति हुई है।",
-        pii: {
-            "प्रिया सिंह": "[REDACTED_PERSON]",
-            "एबीसी कॉर्पोरेशन": "[REDACTED_ORGANIZATION]",
-        },
+        pii: { "प्रिया सिंह": "[REDACTED_PERSON]" },
         priority: 'Medium',
         caseType: 'Civil',
     },
+     // Simplified remaining cases for brevity in Hindi
     {
         id: '3',
-        title: "भारत संघ बनाम पर्यावरण कार्यकर्ता समूह",
+        title: "भारत संघ बनाम पर्यावरण समूह",
         caseNumber: "PIL/0045/2024",
         petitioner: "भारत संघ",
-        respondent: "पर्यावरण कार्यकर्ता समूह",
-        invokedActs: ["राष्ट्रीय हरित अधिकरण अधिनियम, 2010", "पर्यावरण संरक्षण अधिनियम, 1986"],
+        respondent: "पर्यावरण समूह",
+        invokedActs: ["राष्ट्रीय हरित अधिकरण अधिनियम"],
         filingDate: "2024-02-10",
         lastHearingDate: "2024-07-01",
         complexityScore: 9.1,
-        summary: "एक प्रमुख बुनियादी ढांचा परियोजना के लिए पर्यावरण मंजूरी से संबंधित एक जनहित याचिका (पीआईएल)। प्रतिवादी समूह ने संभावित पारिस्थितिक क्षति का हवाला देते हुए मंजूरी को चुनौती दी है।",
+        summary: "एक प्रमुख बुनियादी ढांचा परियोजना के लिए पर्यावरण मंजूरी से संबंधित एक जनहित याचिका।",
         priority: 'High',
         caseType: 'PIL',
     },
@@ -130,225 +124,165 @@ const mockCasesHi: Case[] = [
         caseNumber: "FAM/0312/2023",
         petitioner: "अंजलि वर्मा",
         respondent: "सुनील वर्मा",
-        invokedActs: ["हिंदू विवाह अधिनियम, 1955", "घरेलू हिंसा अधिनियम, 2005"],
+        invokedActs: ["हिंदू विवाह अधिनियम, 1955"],
         filingDate: "2023-08-25",
         lastHearingDate: "2024-06-28",
         complexityScore: 5.5,
-        summary: "तलाक की याचिका और घरेलू हिंसा के आरोपों से संबंधित एक पारिवारिक अदालत का मामला। इस मामले में बच्चे की हिरासत और गुजारा भत्ता के मामले शामिल हैं।",
-        pii: {
-            "अंजलि वर्मा": "[REDACTED_PERSON]",
-            "सुनील वर्मा": "[REDACTED_PERSON]",
-        },
+        summary: "तलाक और घरेलू हिंसा के आरोपों से संबंधित एक पारिवारिक मामला।",
         priority: 'Low',
         caseType: 'Divorce',
     },
 ];
 
-const mockCasesTa: Case[] = [
+const mockCasesOr: Case[] = [
     {
         id: '1',
-        title: "மகாராஷ்டிரா அரசு vs. ராஜ் சர்மா",
+        title: "ମହାରାଷ୍ଟ୍ର ରାଜ୍ୟ ବନାମ ରାଜ ଶର୍ମା",
         caseNumber: "CR/0255/2023",
-        petitioner: "மகாராஷ்டிரா அரசு",
-        respondent: "ராஜ் சர்மா",
-        invokedActs: ["இந்திய தண்டனைச் சட்டம், 1860, பிரிவு 302", "ஆயுதச் சட்டம், 1959, பிரிவு 25"],
+        petitioner: "ମହାରାଷ୍ଟ୍ର ରାଜ୍ୟ",
+        respondent: "ରାଜ ଶର୍ମା",
+        invokedActs: ["ଭାରତୀୟ ଦଣ୍ଡ ସଂହିତା, ୧୮୬୦, ଧାରା ୩୦୨", "ଅସ୍ତ୍ରଶସ୍ତ୍ର ଆଇନ, ୧୯୫୯, ଧାରା ୨୫"],
         filingDate: "2023-01-15",
         lastHearingDate: "2024-05-20",
         complexityScore: 8.5,
-        summary: "கொலை மற்றும் சட்டவிரோதமாக துப்பாக்கிகளை வைத்திருந்த குற்றச்சாட்டுகளை உள்ளடக்கிய ஒரு கிரிமினல் வழக்கு. பிரதிவாதி, ராஜ் சர்மா, ஒரு கொடிய துப்பாக்கிச் சூட்டில் ஈடுபட்டதாக அரசுத் தரப்பு குற்றம் சாட்டுகிறது. முக்கிய ஆதாரங்களில் நேரடி சாட்சியம் மற்றும் தடயவியல் அறிக்கைகள் அடங்கும்.",
-        pii: { "ராஜ் சர்மா": "[REDACTED_PERSON]" },
+        summary: "ହତ୍ୟା ଏବଂ ବେଆଇନ ଅସ୍ତ୍ରଶସ୍ତ୍ର ରଖିବା ଅଭିଯୋଗରେ ଏକ ଫୌଜଦାରୀ ମାମଲା। ଅଭିଯୋଜକ ପକ୍ଷ ଅଭିଯୋଗ କରିଛନ୍ତି ଯେ ଉତ୍ତରଦାତା ରାଜ ଶର୍ମା ଏକ ଘାତକ ଗୁଳିକାଣ୍ଡରେ ସମ୍ପୃକ୍ତ ଥିଲେ। ମୁଖ୍ୟ ପ୍ରମାଣ ମଧ୍ୟରେ ପ୍ରତ୍ୟକ୍ଷଦର୍ଶୀଙ୍କ ସାକ୍ଷ୍ୟ ଏବଂ ଫୋରେନସିକ୍ ରିପୋର୍ଟ ଅନ୍ତର୍ଭୁକ୍ତ।",
+        pii: { "ରାଜ ଶର୍ମା": "[REDACTED_PERSON]" },
         priority: 'High',
         caseType: 'Criminal',
     },
     {
         id: '2',
-        title: "பிரியா சிங் vs. ஏபிசி கார்ப்பரேஷன்",
+        title: "ପ୍ରିୟା ସିଂ ବନାମ ଏବିସି କର୍ପୋରେସନ୍",
         caseNumber: "CIV/1089/2022",
-        petitioner: "பிரியா சிங்",
-        respondent: "ஏபிசி கார்ப்பரேஷன்",
-        invokedActs: ["நுகர்வோர் பாதுகாப்புச் சட்டம், 2019", "ஒப்பந்தச் சட்டம், 1872"],
+        petitioner: "ପ୍ରିୟା ସିଂ",
+        respondent: "ଏବିସି କର୍ପୋରେସନ୍",
+        invokedActs: ["ଉପଭୋକ୍ତା ସୁରକ୍ଷା ଆଇନ, ୨୦୧୯", "ଚୁକ୍ତିନାମା ଆଇନ, ୧୮୭୨"],
         filingDate: "2022-11-02",
         lastHearingDate: "2024-06-10",
         complexityScore: 6.2,
-        summary: "ஒப்பந்தத்தை மீறியதற்காகவும், குறைபாடுள்ள சேவைகளை வழங்கியதற்காகவும் பிரியா சிங் ஏபிசி கார்ப்பரேஷன் மீது தாக்கல் செய்த சிவில் வழக்கு. சேவை ஒப்பந்தத்தை நிறைவேற்றத் தவறியதால் ஏற்பட்ட நிதி இழப்பைக் கோருகிறார் மனுதாரர்.",
-        pii: { "பிரியா சிங்": "[REDACTED_PERSON]" },
+        summary: "ଚୁକ୍ତିନାମା ଉଲ୍ଲଂଘନ ଏବଂ ତ୍ରୁଟିପୂର୍ଣ୍ଣ ସେବା ପାଇଁ ପ୍ରିୟା ସିଂ ଏବିସି କର୍ପୋରେସନ୍ ବିରୁଦ୍ଧରେ ଦାୟର କରିଥିବା ଏକ ଦେୱାନୀ ମାମଲା।",
         priority: 'Medium',
         caseType: 'Civil',
-    },
-    {
-        id: '3',
-        title: "இந்திய யூனியன் vs. சுற்றுச்சூழல் ஆர்வலர்கள் குழு",
-        caseNumber: "PIL/0045/2024",
-        petitioner: "இந்திய யூனியன்",
-        respondent: "சுற்றுச்சூழல் ஆர்வலர்கள் குழு",
-        invokedActs: ["தேசிய பசுமை தீர்ப்பாயச் சட்டம், 2010", "சுற்றுச்சூழல் பாதுகாப்புச் சட்டம், 1986"],
-        filingDate: "2024-02-10",
-        lastHearingDate: "2024-07-01",
-        complexityScore: 9.1,
-        summary: "ஒரு பெரிய உள்கட்டமைப்பு திட்டத்திற்கான சுற்றுச்சூழல் அனுமதி தொடர்பான பொது நல வழக்கு (PIL). சாத்தியமான சூழலியல் பாதிப்பைக் காரணம் காட்டி, பிரதிவாதி குழு இந்த அனுமதிக்கு சவால் விடுத்துள்ளது.",
-        priority: 'High',
-        caseType: 'PIL',
-    },
-    {
-        id: '4',
-        title: "அஞ்சலி வர்மா vs. சுனில் வர்மா",
-        caseNumber: "FAM/0312/2023",
-        petitioner: "அஞ்சலி வர்மா",
-        respondent: "சுனில் வர்மா",
-        invokedActs: ["இந்து திருமணச் சட்டம், 1955", "குடும்ப வன்முறைச் சட்டம், 2005"],
-        filingDate: "2023-08-25",
-        lastHearingDate: "2024-06-28",
-        complexityScore: 5.5,
-        summary: "விவாகரத்து மற்றும் குடும்ப வன்முறை குற்றச்சாட்டுகள் தொடர்பான குடும்ப நீதிமன்ற வழக்கு. இந்த வழக்கில் குழந்தை காவல் மற்றும் ஜீவனாம்சம் தொடர்பான விஷயங்கள் அடங்கும்.",
-        pii: { "அஞ்சலி வர்மா": "[REDACTED_PERSON]", "சுனில் வர்மா": "[REDACTED_PERSON]" },
-        priority: 'Low',
-        caseType: 'Divorce',
-    },
+    }
 ];
 
-const mockCasesTe: Case[] = [
+const mockCasesSa: Case[] = [
     {
         id: '1',
-        title: "మహారాష్ట్ర ప్రభుత్వం vs. రాజ్ శర్మ",
+        title: "महाराष्ट्रराज्यम् विरुद्धं राजशर्मा",
         caseNumber: "CR/0255/2023",
-        petitioner: "మహారాష్ట్ర ప్రభుత్వం",
-        respondent: "రాజ్ శర్మ",
-        invokedActs: ["భారతీయ శిక్షాస్మృతి, 1860, సెక్షన్ 302", "ఆయుధాల చట్టం, 1959, సెక్షన్ 25"],
+        petitioner: "महाराष्ट्रराज्यम्",
+        respondent: "राजशर्मा",
+        invokedActs: ["भारतीयदण्डसंहिता, १८६०, धारा ३०२", "शस्त्रअधिनियमः, १९५९, धारा २५"],
         filingDate: "2023-01-15",
         lastHearingDate: "2024-05-20",
         complexityScore: 8.5,
-        summary: "హత్య మరియు అక్రమంగా ఆయుధాలు కలిగి ఉన్న ఆరోపణలతో కూడిన ఒక క్రిమినల్ కేసు. ప్రతివాది, రాజ్ శర్మ, ఒక ప్రాణాంతకమైన కాల్పుల్లో పాల్గొన్నాడని ప్రాసిక్యూషన్ ఆరోపిస్తుంది. ముఖ్యమైన సాక్ష్యాలలో ప్రత్యక్ష సాక్షుల వాంగ్మూలం మరియు ఫోరెన్సిక్ నివేదికలు ఉన్నాయి.",
-        pii: { "రాజ్ శర్మ": "[REDACTED_PERSON]" },
+        summary: "हत्यायाः तथा अवैधशस्त्रास्त्राणां धारनस्य आरोपैः युक्तम् एकम् आपराधिकं प्रकरणम्। अभियोजनपक्षः आरोपयति यत् प्रतिवादी राजशर्मा एकस्मिन् घातक-गोलिका-काण्डे संलिप्तः आसीत्। मुख्य-प्रमाणेषु प्रत्यक्षदर्शिनः साक्ष्यं तथा च फोरेंसिक-प्रतिवेदनम् अन्तर्भवति।",
+        pii: { "राजशर्मा": "[REDACTED_PERSON]" },
         priority: 'High',
         caseType: 'Criminal',
     },
     {
         id: '2',
-        title: "ప్రియా సింగ్ vs. ABC కార్పొరేషన్",
+        title: "प्रियासिहः विरुद्धं एबीसी-निगमः",
         caseNumber: "CIV/1089/2022",
-        petitioner: "ప్రియా సింగ్",
-        respondent: "ABC కార్పొరేషన్",
-        invokedActs: ["వినియోగదారుల రక్షణ చట్టం, 2019", "ఒప్పంద చట్టం, 1872"],
+        petitioner: "प्रियासिहः",
+        respondent: "एबीसी-निगमः",
+        invokedActs: ["उपभोक्तृ-संरक्षण-अधिनियमः, २०१९"],
         filingDate: "2022-11-02",
         lastHearingDate: "2024-06-10",
         complexityScore: 6.2,
-        summary: "ఒప్పందాన్ని ఉల్లంఘించినందుకు మరియు లోపభూయిష్టమైన సేవలను అందించినందుకు ABC కార్పొరేషన్‌పై ప్రియా సింగ్ దాఖలు చేసిన సివిల్ దావా. సేవా ఒప్పందాన్ని నెరవేర్చడంలో ప్రతివాది వైఫల్యం కారణంగా పిటిషనర్ ఆర్థిక నష్టాలను క్లెయిమ్ చేశారు.",
-        pii: { "ప్రియా సింగ్": "[REDACTED_PERSON]" },
+        summary: "अनुबन्ध-उल्लङ्घनार्थं तथा च दोषपूर्ण-सेवानां प्रदानार्थं एबीसी-निगमस्य विरुद्धं प्रियासिंहेन दाखिलः एकः दीवानी-वादः।",
         priority: 'Medium',
         caseType: 'Civil',
-    },
-    {
-        id: '3',
-        title: "యూనియన్ ఆఫ్ ఇండియా vs. పర్యావరణ కార్యకర్తల సమూహం",
-        caseNumber: "PIL/0045/2024",
-        petitioner: "యూనియన్ ఆఫ్ ఇండియా",
-        respondent: "పర్యావరణ కార్యకర్తల సమూహం",
-        invokedActs: ["నేషనల్ గ్రీన్ ట్రిబ్యునల్ చట్టం, 2010", "పర్యావరణ పరిరక్షణ చట్టం, 1986"],
-        filingDate: "2024-02-10",
-        lastHearingDate: "2024-07-01",
-        complexityScore: 9.1,
-        summary: "ఒక ప్రధాన మౌలిక సదుపాయాల ప్రాజెక్ట్ కోసం పర్యావరణ అనుమతికి సంబంధించిన ప్రజా ప్రయోజన వ్యాజ్యం (PIL). ప్రతివాది సమూహం పర్యావరణ నష్టాన్ని ఉటంకిస్తూ అనుమతిని సవాలు చేసింది.",
-        priority: 'High',
-        caseType: 'PIL',
-    },
-    {
-        id: '4',
-        title: "అంజలి వర్మ vs. సునీల్ వర్మ",
-        caseNumber: "FAM/0312/2023",
-        petitioner: "అంజలి వర్మ",
-        respondent: "సునీల్ వర్మ",
-        invokedActs: ["హిందూ వివాహ చట్టం, 1955", "గృహ హింస చట్టం, 2005"],
-        filingDate: "2023-08-25",
-        lastHearingDate: "2024-06-28",
-        complexityScore: 5.5,
-        summary: "విడాకుల కోసం పిటిషన్ మరియు గృహ హింస ఆరోపణలకు సంబంధించిన కుటుంబ న్యాయస్థానం కేసు. ఈ కేసులో పిల్లల అదుపు మరియు భరణం విషయాలు ఉన్నాయి.",
-        pii: { "అంజలి వర్మ": "[REDACTED_PERSON]", "సునీల్ వర్మ": "[REDACTED_PERSON]" },
-        priority: 'Low',
-        caseType: 'Divorce',
-    },
+    }
 ];
 
-const mockCasesBn: Case[] = [
+const mockCasesUr: Case[] = [
     {
         id: '1',
-        title: "মহারাষ্ট্র রাজ্য বনাম রাজ শর্মা",
+        title: "ریاست مہاراشٹر بمقابلہ راج شرما",
         caseNumber: "CR/0255/2023",
-        petitioner: "মহারাষ্ট্র রাজ্য",
-        respondent: "রাজ শর্মা",
-        invokedActs: ["ভারতীয় দণ্ডবিধি, 1860, ধারা 302", "অস্ত্র আইন, 1959, ধারা 25"],
+        petitioner: "ریاست مہاراشٹر",
+        respondent: "راج شرما",
+        invokedActs: ["تعزیرات ہند، 1860، دفعہ 302", "آرمز ایکٹ، 1959، دفعہ 25"],
         filingDate: "2023-01-15",
         lastHearingDate: "2024-05-20",
         complexityScore: 8.5,
-        summary: "হত্যা এবং অবৈধভাবে আগ্নেয়াস্ত্র রাখার অভিযোগ জড়িত একটি ফৌজদারি মামলা। প্রসিকিউশন অভিযোগ করেছে যে উত্তরদাতা, রাজ শর্মা, একটি মারাত্মক গুলি চালানোর ঘটনায় জড়িত ছিল। মূল প্রমাণের মধ্যে রয়েছে প্রত্যক্ষদর্শীর সাক্ষ্য এবং ফরেনসিক রিপোর্ট।",
-        pii: { "রাজ শর্মা": "[REDACTED_PERSON]" },
+        summary: "قتل اور آتشیں اسلحہ کے غیر قانونی قبضے کے الزامات پر مبنی ایک فوجداری مقدمہ۔ استغاثة کا الزام ہے کہ جواب دہندہ، راج شرما، ایک مہلک فائرنگ میں ملوث تھا۔ کلیدی شواہد میں عینی شاہدین کی گواہی اور فرانزک رپورٹس شامل ہیں۔",
+        pii: { "راج شرما": "[REDACTED_PERSON]" },
         priority: 'High',
         caseType: 'Criminal',
     },
     {
         id: '2',
-        title: "প্রিয়া সিং বনাম এবিসি কর্পোরেশন",
+        title: "پریا سنگھ بمقابلہ اے بی سی کارپوریشن",
         caseNumber: "CIV/1089/2022",
-        petitioner: "প্রিয়া সিং",
-        respondent: "এবিসি কর্পোরেশন",
-        invokedActs: ["ভোক্তা সুরক্ষা আইন, ২০১৯", "চুক্তি আইন, ১৮৭২"],
+        petitioner: "پریا سنگھ",
+        respondent: "اے بی سی کارپوریشن",
+        invokedActs: ["کنزیومر پروٹیکشن ایکٹ، 2019"],
         filingDate: "2022-11-02",
         lastHearingDate: "2024-06-10",
         complexityScore: 6.2,
-        summary: "চুক্তি লঙ্ঘন এবং ত্রুটিপূর্ণ পরিষেবা প্রদানের জন্য এবিসি কর্পোরেশনের বিরুদ্ধে প্রিয়া সিং দ্বারা দায়ের করা একটি দেওয়ানি মামলা। আবেদনকারী দাবি করেছেন যে উত্তরদাতার একটি পরিষেবা চুক্তি পূরণে ব্যর্থতার কারণে আর্থিক ক্ষতি হয়েছে।",
-        pii: { "প্রিয়া সিং": "[REDACTED_PERSON]" },
+        summary: "معاہدے کی خلاف ورزی اور ناقص خدمات فراہم کرنے پر اے بی سی کارپوریشن کے خلاف پریا سنگھ کی طرف سے دائر کیا گیا دیوانی مقدمہ۔",
         priority: 'Medium',
         caseType: 'Civil',
-    },
+    }
+];
+
+const mockCasesAs: Case[] = [
     {
-        id: '3',
-        title: "ইউনিয়ন অফ ইন্ডিয়া বনাম পরিবেশ কর্মী গোষ্ঠী",
-        caseNumber: "PIL/0045/2024",
-        petitioner: "ইউনিয়ন অফ ইন্ডিয়া",
-        respondent: "পরিবেশ কর্মী গোষ্ঠী",
-        invokedActs: ["জাতীয় সবুজ ট্রাইব্যুনাল আইন, ২০১০", "পরিবেশ সুরক্ষা আইন, ১৯৮৬"],
-        filingDate: "2024-02-10",
-        lastHearingDate: "2024-07-01",
-        complexityScore: 9.1,
-        summary: "একটি বড় পরিকাঠামো প্রকল্পের জন্য পরিবেশগত ছাড়পত্র সংক্রান্ত একটি জনস্বার্থ মামলা (PIL)। উত্তরদাতা গোষ্ঠী সম্ভাব্য পরিবেশগত ক্ষতির কথা উল্লেখ করে ছাড়পত্রকে চ্যালেঞ্জ করেছে।",
+        id: '1',
+        title: "মহাৰাষ্ট্ৰ ৰাজ্য বনাম ৰাজ শৰ্মা",
+        caseNumber: "CR/0255/2023",
+        petitioner: "মহাৰাষ্ট্ৰ ৰাজ্য",
+        respondent: "ৰাজ শৰ্মা",
+        invokedActs: ["ভাৰতীয় দণ্ডবিধি, ১৮৬০, ধাৰা ৩০২", "অস্ত্ৰ আইন, ১৯৫৯, ধাৰা ২৫"],
+        filingDate: "2023-01-15",
+        lastHearingDate: "2024-05-20",
+        complexityScore: 8.5,
+        summary: "হত্যা আৰু অবৈধভাৱে আগ্নেয়াস্ত্ৰ ৰখাৰ অভিযোগ জড়িত এটা ফৌজ্জদাৰী গোচৰ। চৰকাৰী পক্ষই অভিযোগ কৰিছে যে উত্তৰদাতা ৰাজ শৰ্মা এটা মাৰাত্মক গুলীচালনাৰ ঘটনাত জড়িত আছিল। মূল প্ৰমাণবোৰৰ ভিতৰত আছে প্ৰত্যক্ষদৰ্শীৰ সাক্ষ্য আৰু ফৰেনচিক ৰিপৰ্ট।",
+        pii: { "ৰাজ শৰ্মা": "[REDACTED_PERSON]" },
         priority: 'High',
-        caseType: 'PIL',
+        caseType: 'Criminal',
     },
     {
-        id: '4',
-        title: "অঞ্জলি ভার্মা বনাম সুনীল ভার্মা",
-        caseNumber: "FAM/0312/2023",
-        petitioner: "অঞ্জলি ভার্মা",
-        respondent: "সুনীল ভার্মা",
-        invokedActs: ["হিন্দু বিবাহ আইন, ১৯৫৫", "গার্হস্থ্য সহিংসতা আইন, ২০০৫"],
-        filingDate: "2023-08-25",
-        lastHearingDate: "2024-06-28",
-        complexityScore: 5.5,
-        summary: "বিবাহবিচ্ছেদের আবেদন এবং গার্হস্থ্য সহিংসতার অভিযোগ সংক্রান্ত একটি পারিবারিক আদালতের মামলা। এই মামলায় সন্তানের হেফাজত এবং ভরণপোষণের বিষয় জড়িত।",
-        pii: { "অঞ্জলি ভার্মা": "[REDACTED_PERSON]", "সুনীল ভার্মা": "[REDACTED_PERSON]" },
-        priority: 'Low',
-        caseType: 'Divorce',
-    },
+        id: '2',
+        title: "প্ৰিয়া সিং বনাম এবিচি কৰ্পোৰেচন",
+        caseNumber: "CIV/1089/2022",
+        petitioner: "প্ৰিয়া সিং",
+        respondent: "এবিচি কৰ্পোৰেচন",
+        invokedActs: ["গ্ৰাহক সুৰক্ষা আইন, ২০১৯"],
+        filingDate: "2022-11-02",
+        lastHearingDate: "2024-06-10",
+        complexityScore: 6.2,
+        summary: "চুক্তি উলংঘন আৰু ত্ৰুটিপূৰ্ণ সেৱা প্ৰদানৰ বাবে এবিচি কৰ্পোৰেচনৰ বিৰুদ্ধে প্ৰিয়া সিঙে দাখিল কৰা এটা দেৱানী গোচৰ।",
+        priority: 'Medium',
+        caseType: 'Civil',
+    }
 ];
 
 
-export const getMockCases = (language: Language): Case[] => {
+export const mockNpsData = [
+    { name: 'Promoters', value: 65, fill: '#4ade80' },
+    { name: 'Passives', value: 25, fill: '#facc15' },
+    { name: 'Detractors', value: 10, fill: '#f87171' },
+];
+
+export const getMockCases = (language: string): Case[] => {
     switch (language) {
-        case 'hi':
-            return mockCasesHi;
-        case 'ta':
-            return mockCasesTa;
-        case 'te':
-            return mockCasesTe;
-        case 'bn':
-            return mockCasesBn;
+        case 'hi': return mockCasesHi;
+        case 'or': return mockCasesOr;
+        case 'sa': return mockCasesSa;
+        case 'ur': return mockCasesUr;
+        case 'as': return mockCasesAs;
+        // Fallback to Hindi for other Devanagari-ish languages if specific mock data isn't available, 
+        // or En if script is different.
+        case 'mr': return mockCasesHi; // Using Hindi mock as placeholder for Marathi (usually shared script)
+        case 'ne': return mockCasesHi; // Using Hindi mock as placeholder for Nepali
+        // Fallback to English for others for now
         case 'en':
         default:
             return mockCasesEn;
     }
 };
-
-export const mockNpsData = [
-  { name: 'Promoters', value: 400, fill: '#4CAF50' },
-  { name: 'Passives', value: 300, fill: '#FFC107' },
-  { name: 'Detractors', value: 100, fill: '#F44336' },
-];

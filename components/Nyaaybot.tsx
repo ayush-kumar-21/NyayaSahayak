@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { GoogleGenAI, LiveServerMessage, Modality, Blob as GenAIBlob, Part } from "@google/genai";
 import { geminiService } from '../services/geminiService';
@@ -10,7 +11,7 @@ import AnimatedPageWrapper from './common/AnimatedPageWrapper';
 
 type LiveSession = Awaited<ReturnType<InstanceType<typeof GoogleGenAI>['live']['connect']>>;
 
-interface NyaaybotProps {
+interface NyayabotProps {
     t: (key: string) => string;
     messages: ChatMessage[];
     setMessages: (messages: ChatMessage[]) => void;
@@ -39,7 +40,7 @@ function createBlob(data: Float32Array): GenAIBlob {
 }
 
 
-const Nyaaybot: React.FC<NyaaybotProps> = ({ t, messages, setMessages }) => {
+const Nyayabot: React.FC<NyayabotProps> = ({ t, messages, setMessages }) => {
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isRecording, setIsRecording] = useState(false);
@@ -51,7 +52,11 @@ const Nyaaybot: React.FC<NyaaybotProps> = ({ t, messages, setMessages }) => {
     const inputAudioContextRef = useRef<AudioContext | null>(null);
     const mediaStreamRef = useRef<MediaStream | null>(null);
     const scriptProcessorRef = useRef<ScriptProcessorNode | null>(null);
-    const currentTranscriptionRef = useRef('');
+    
+    // stableTranscriptRef holds fully finalized sentences
+    const stableTranscriptRef = useRef('');
+    // volatileTranscriptRef accumulates chunks (deltas) for the current active sentence
+    const volatileTranscriptRef = useRef('');
 
     useEffect(() => {
         if (chatContainerRef.current) {
@@ -94,14 +99,14 @@ const Nyaaybot: React.FC<NyaaybotProps> = ({ t, messages, setMessages }) => {
                 })
             );
 
-            const response = await geminiService.chatWithNayaaybot(userMessage, fileParts, newMessages);
+            const response = await geminiService.chatWithNyayabot(userMessage, fileParts, newMessages);
             const groundingChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
             const sources = groundingChunks?.map((chunk: any) => chunk.web.uri);
             
             const modelResponse: ChatMessage = { role: 'model', content: response.text, sources };
             setMessages([...newMessages, modelResponse]);
         } catch (error) {
-            console.error("Error chatting with Nyaaybot:", error);
+            console.error("Error chatting with Nyayabot:", error);
             setMessages([...newMessages, { role: 'system', content: t('error_occurred') }]);
         } finally {
             setIsLoading(false);
@@ -134,13 +139,13 @@ const Nyaaybot: React.FC<NyaaybotProps> = ({ t, messages, setMessages }) => {
              inputAudioContextRef.current = null;
         }
 
-        currentTranscriptionRef.current = '';
     }, [isRecording]);
 
     const startRecording = useCallback(async () => {
         setIsRecording(true);
         setInput('');
-        currentTranscriptionRef.current = '';
+        stableTranscriptRef.current = '';
+        volatileTranscriptRef.current = '';
 
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -167,14 +172,22 @@ const Nyaaybot: React.FC<NyaaybotProps> = ({ t, messages, setMessages }) => {
                         scriptProcessorRef.current.connect(inputAudioContextRef.current.destination);
                     },
                     onmessage: (message: LiveServerMessage) => {
-                        if (message.serverContent?.inputTranscription) {
-                            const newText = message.serverContent.inputTranscription.text;
-                            currentTranscriptionRef.current += newText;
-                            setInput(currentTranscriptionRef.current);
+                        const transcription = message.serverContent?.inputTranscription;
+                        if (transcription) {
+                            const { text, isFinal } = transcription;
+                            
+                            // Accumulate the incoming delta text into the volatile buffer
+                            volatileTranscriptRef.current += text;
+                            
+                            // Update UI to show stable history + current active sentence
+                            setInput(stableTranscriptRef.current + volatileTranscriptRef.current);
 
-                             if (message.serverContent?.turnComplete) {
-                                currentTranscriptionRef.current += ' ';
-                                setInput(currentTranscriptionRef.current);
+                            if (isFinal) {
+                                // When final, commit the volatile buffer to stable history
+                                stableTranscriptRef.current += volatileTranscriptRef.current + ' ';
+                                volatileTranscriptRef.current = '';
+                                // Update UI one last time for this segment
+                                setInput(stableTranscriptRef.current);
                             }
                         }
                     },
@@ -208,7 +221,7 @@ const Nyaaybot: React.FC<NyaaybotProps> = ({ t, messages, setMessages }) => {
             setMessages([...messages, { role: 'system', content: t('mic_access_denied') }]);
             setIsRecording(false);
         }
-    }, [stopRecording, isRecording, t, messages, setMessages]);
+    }, [stopRecording, t, messages, setMessages]);
 
     const toggleRecording = () => {
         if (isRecording) {
@@ -266,13 +279,19 @@ const Nyaaybot: React.FC<NyaaybotProps> = ({ t, messages, setMessages }) => {
     return (
         <AnimatedPageWrapper>
             <div className="flex flex-col h-full max-w-3xl mx-auto bg-gray-800/60 backdrop-blur-md rounded-2xl shadow-xl border border-gray-700">
-                <h2 className="p-4 border-b border-gray-700 text-lg font-bold text-center text-white">{t('tab_nyaaybot')}</h2>
+                <h2 className="p-4 border-b border-gray-700 text-lg font-bold text-center text-white">{t('tab_nyayabot')}</h2>
                 <div ref={chatContainerRef} className="flex-1 p-4 overflow-y-auto space-y-4">
                     {messages.map((msg, index) => (
-                        <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                           <div className={`p-3 rounded-2xl max-w-lg ${
-                               msg.role === 'user' ? 'bg-blue-500 text-white' : 
-                               msg.role === 'model' ? 'bg-gray-700 text-gray-200' : 'bg-red-900/50 text-red-200 text-sm'
+                         <div key={index} className={`flex items-start gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                            {msg.role === 'model' && (
+                                <div className="w-9 h-9 rounded-full bg-gray-600 flex items-center justify-center flex-shrink-0">
+                                    <i className="fas fa-balance-scale text-blue-300 text-lg"></i>
+                                </div>
+                            )}
+                           <div className={`px-4 py-3 rounded-2xl max-w-lg ${
+                               msg.role === 'user' ? 'bg-blue-600 text-white rounded-br-none' : 
+                               msg.role === 'model' ? 'bg-gray-700 text-gray-200 rounded-bl-none' : 
+                               'bg-red-900/50 text-red-200 text-sm'
                            }`}>
                                 {msg.role === 'model' ? (
                                     <div className="leading-relaxed" dangerouslySetInnerHTML={formatBotMessage(msg.content)} />
@@ -298,7 +317,16 @@ const Nyaaybot: React.FC<NyaaybotProps> = ({ t, messages, setMessages }) => {
                            </div>
                         </div>
                     ))}
-                    {isLoading && <div className="flex justify-start"><div className="p-3 rounded-2xl bg-gray-700"><Spinner /></div></div>}
+                    {isLoading && (
+                        <div className="flex items-start gap-3 justify-start">
+                             <div className="w-9 h-9 rounded-full bg-gray-600 flex items-center justify-center flex-shrink-0">
+                                <i className="fas fa-balance-scale text-blue-300 text-lg"></i>
+                            </div>
+                            <div className="p-3 rounded-2xl rounded-bl-none bg-gray-700">
+                                <Spinner />
+                            </div>
+                        </div>
+                    )}
                 </div>
                 <div className="p-4 border-t border-gray-700">
                     {ragFiles.length > 0 && (
@@ -326,7 +354,7 @@ const Nyaaybot: React.FC<NyaaybotProps> = ({ t, messages, setMessages }) => {
                             type="text"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            placeholder={isRecording ? t('nyaaybot_listening') : (ragFiles.length > 0 ? t('ask_about_docs_placeholder') : t('nyaaybot_placeholder'))}
+                            placeholder={isRecording ? t('nyayabot_listening') : (ragFiles.length > 0 ? t('ask_about_docs_placeholder') : t('nyayabot_placeholder'))}
                             disabled={isRecording}
                             className="flex-1 p-2 border rounded-xl bg-gray-700 border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-600 text-white placeholder-gray-400"
                         />
@@ -343,4 +371,4 @@ const Nyaaybot: React.FC<NyaaybotProps> = ({ t, messages, setMessages }) => {
     );
 };
 
-export default Nyaaybot;
+export default Nyayabot;
